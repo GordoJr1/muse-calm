@@ -908,3 +908,56 @@ select option { background: #0e1a33; color: var(--text); }
   .sound input { display: none; }
   .sound { padding: 0 2px; }
 }
+
+/* ================= v2.4: customizable desktop layout =================
+ * Default: the v2.3 columns above. "Customize layout" (top bar) turns the grid into a 48-column dashboard
+ * (column widths are fractions of the window, rows are 8 px); tiles carry their slot in --gc / --gr (set by js/layout.js).
+ * In edit mode each tile gets an overlay: a title bar to drag, a corner grip to resize; in-tile controls are inert.
+ * A saved layout taller than the window scrolls the page instead of clipping. Phone / tablet ignore all of this. */
+.layout-tools, .tile-ui, .tile-ph { display: none; }
+@media (min-width: 1000px) {
+  .layout-tools { display: flex; align-items: center; gap: 8px; flex: none; }
+  .layout-btn { cursor: pointer; font: inherit; font-size: 12.5px; font-weight: 600; color: var(--muted); gap: 7px; padding: 0 13px 0 10px; transition: color .2s, background .2s, border-color .2s; }
+  .layout-btn:hover { color: var(--text); background: var(--glass-hi); border-color: rgba(94, 234, 212, 0.35); }
+  .layout-btn:focus-visible, .tile-bar:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+  body.editing .layout-btn { display: none; }
+  .edit-bar:not([hidden]) { display: flex; align-items: center; gap: 6px; height: 36px; padding: 0 4px 0 14px; border-radius: 999px;
+    background: rgba(94, 234, 212, 0.1); border: 1px solid rgba(94, 234, 212, 0.38); box-shadow: 0 0 28px -8px rgba(94, 234, 212, 0.55);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); animation: fadeIn .2s both; }
+  .eb-hint { font-size: 12.5px; color: #c7f7ee; white-space: nowrap; margin-right: 6px; }
+  .edit-bar .btn.tiny { height: 28px; padding: 0 13px; font-size: 12.5px; }
+  .edit-bar .eb-done { padding: 0 18px; }
+  body.editing .top-note { display: none; }
+
+  /* grid mode (saved layout, or while customizing) */
+  body.lay-grid { height: auto; min-height: 100dvh; overflow-x: hidden; overflow-y: auto; }
+  body.lay-grid .grid { flex: none; height: auto; grid-template-columns: repeat(48, minmax(0, 1fr)); grid-template-rows: none;
+    grid-auto-rows: 8px; row-gap: 0; padding-bottom: 2px; position: relative; }
+  body.lay-grid .col, body.lay-grid .pair { display: contents; }
+  body.lay-grid .card[data-tile] { grid-column: var(--gc); grid-row: var(--gr); margin: 0 0 var(--gap); min-height: 0; min-width: 0; flex: none; }
+  body.lay-grid .card[data-tile]:not(.hero) { overflow: auto; scrollbar-width: thin; scrollbar-color: rgba(255, 255, 255, 0.18) transparent; }
+
+  /* edit mode: subtle column / row guides, tile overlays, drag placeholder */
+  body.editing .grid { background-image: linear-gradient(90deg, rgba(94, 234, 212, 0.055) 0 var(--colw, 40px), transparent var(--colw, 40px)),
+      repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 32px);
+    background-size: var(--pitch, 56px) 100%, 100% 100%; background-repeat: repeat-x, repeat; background-origin: content-box; background-clip: content-box; }
+  body.editing .card[data-tile] { outline: 1px dashed rgba(94, 234, 212, 0.5); outline-offset: -1px; overflow: hidden; }
+  body.editing .card > .tile-ui { display: block; position: absolute; inset: 0; z-index: 40; grid-column: auto; grid-row: auto; border-radius: inherit;
+    background: rgba(7, 16, 38, 0.3); }
+  .tile-bar { position: absolute; left: 0; right: 0; top: 0; height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 14px;
+    border-top-left-radius: inherit; border-top-right-radius: inherit; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none;
+    background: linear-gradient(180deg, rgba(94, 234, 212, 0.26), rgba(94, 234, 212, 0.1)); border-bottom: 1px solid rgba(94, 234, 212, 0.32);
+    color: #e7fffa; font-size: 13px; font-weight: 650; letter-spacing: .2px; }
+  .tile-bar svg { flex: none; opacity: .85; }
+  .tile-bar:hover { background: linear-gradient(180deg, rgba(94, 234, 212, 0.34), rgba(94, 234, 212, 0.14)); }
+  .tile-grip { position: absolute; right: 5px; bottom: 5px; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 8px;
+    cursor: nwse-resize; touch-action: none; color: #a7f3d0; background: rgba(94, 234, 212, 0.16); border: 1px solid rgba(94, 234, 212, 0.4); }
+  .tile-grip:hover { background: rgba(94, 234, 212, 0.3); }
+  body.editing .card.dragging { z-index: 50; cursor: grabbing; box-shadow: 0 34px 80px -20px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(94, 234, 212, 0.7); }
+  body.editing .card.dragging .tile-bar { cursor: grabbing; }
+  body.editing .card.resizing { z-index: 45; }
+  body.editing .tile-ph.on { display: block; grid-column: var(--gc); grid-row: var(--gr); margin-bottom: var(--gap); border-radius: 20px;
+    border: 2px dashed rgba(94, 234, 212, 0.65); background: rgba(94, 234, 212, 0.08); pointer-events: none; }
+}
+@media (min-width: 1000px) and (max-width: 1279.98px) { .eb-hint { display: none; } }
+@media (min-width: 1000px) and (max-width: 1159.98px) { .layout-btn span { display: none; } .layout-btn { padding: 0 10px; } }

@@ -13,7 +13,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Muse Calm">
-  <link rel="stylesheet" href="css/styles.css?v=2.3.0">
+  <link rel="stylesheet" href="css/styles.css?v=2.4.0">
 </head>
 <body>
   <div class="bg" aria-hidden="true">
@@ -27,6 +27,17 @@
       <div class="brand-text"><h1>Muse Calm</h1><p>Live brain · heart · calm</p></div>
     </div>
     <p class="top-note">Runs locally in your browser · no data leaves this device · not a medical device</p>
+    <div class="layout-tools">
+      <button type="button" id="layoutBtn" class="pill layout-btn" aria-pressed="false" aria-controls="editBar" title="Move and resize the dashboard tiles">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="3.5" y="3.5" width="7.5" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="13" y="3.5" width="7.5" height="5.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="13" y="11" width="7.5" height="9.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="3.5" y="14.5" width="7.5" height="6" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+        <span>Customize layout</span>
+      </button>
+      <div id="editBar" class="edit-bar" role="toolbar" aria-label="Customize layout" hidden>
+        <span class="eb-hint">Drag a tile by its title bar · resize from the corner</span>
+        <button type="button" id="layoutReset" class="btn tiny eb-reset">Reset layout</button>
+        <button type="button" id="layoutDone" class="btn tiny primary eb-done">Done</button>
+      </div>
+    </div>
     <div class="status-group">
       <div id="statusPill" class="pill status idle"><span class="dot"></span><span id="statusText">Not connected</span></div>
       <div id="batteryPill" class="pill battery" hidden>
@@ -367,17 +378,18 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/muse-protocol.js?v=2.3.1"></script>
-  <script src="js/dsp.js?v=2.3.0"></script>
-  <script src="js/contact.js?v=2.3.0"></script>
-  <script src="js/session.js?v=2.3.0"></script>
-  <script src="js/muse-ble.js?v=2.3.0"></script>
-  <script src="js/simulator.js?v=2.3.0"></script>
-  <script src="js/birds.js?v=2.3.0"></script>
-  <script src="js/soundscapes.js?v=2.3.0"></script>
-  <script src="js/charts.js?v=2.3.0"></script>
-  <script src="js/explain.js?v=2.3.0"></script>
-  <script src="js/tabs.js?v=2.3.0"></script>
-  <script src="js/app.js?v=2.3.0"></script>
+  <script src="js/muse-protocol.js?v=2.4.0"></script>
+  <script src="js/dsp.js?v=2.4.0"></script>
+  <script src="js/contact.js?v=2.4.0"></script>
+  <script src="js/session.js?v=2.4.0"></script>
+  <script src="js/muse-ble.js?v=2.4.0"></script>
+  <script src="js/simulator.js?v=2.4.0"></script>
+  <script src="js/birds.js?v=2.4.0"></script>
+  <script src="js/soundscapes.js?v=2.4.0"></script>
+  <script src="js/charts.js?v=2.4.0"></script>
+  <script src="js/explain.js?v=2.4.0"></script>
+  <script src="js/tabs.js?v=2.4.0"></script>
+  <script src="js/layout.js?v=2.4.0"></script>
+  <script src="js/app.js?v=2.4.0"></script>
 </body>
 </html>

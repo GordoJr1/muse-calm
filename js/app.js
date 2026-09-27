@@ -895,6 +895,11 @@
   setMode('idle');
   renderPast();
   requestAnimationFrame(frame);
+  /* desktop: movable / resizable tiles (js/layout.js); popovers close while editing, sessions keep running */
+  const layout = window.MuseLayout ? window.MuseLayout.init({ storage, onEdit: (on) => {
+    if (!on) return;
+    $('hero').classList.remove('more-open'); $('moreBtn').setAttribute('aria-expanded', 'false'); window.Explain.close();
+  } }) : null;
   if (params.has('demo')) $('demoBtn').click();
-  window.__museCalm = { S, birds, scapes, sim, ble, store, prefs, SPEED, vnow, startSession, finishSession, openDetail, closeDetail, DT, renderPast };   // for debugging / tests
+  window.__museCalm = { S, birds, scapes, sim, ble, store, prefs, SPEED, vnow, startSession, finishSession, openDetail, closeDetail, DT, renderPast, layout };   // for debugging / tests
 })();

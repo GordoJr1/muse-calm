@@ -28,13 +28,17 @@ Switch the Muse on, but don't pair it in your system's Bluetooth settings. Then 
 
 On a phone the app uses bottom tabs (Session, Brain, Body, History). On a desktop everything fits on one screen.
 
+**Customize the desktop layout:** click **Customize layout** in the top bar. Drag a tile by its title bar and resize it
+from the bottom-right corner; tiles snap to a grid and push the others out of the way. Click **Done** to save the layout
+in this browser, or **Reset layout** to go back to the default. A running session keeps going while you edit.
+
 ## Development
 Plain HTML, CSS and JavaScript: no build step and no dependencies. Serve the folder with any static server,
 for example `python -m http.server`, and open `http://localhost:8000/`. Web Bluetooth needs https or localhost.
 
 Unit tests (Node.js):
 ```
-node tests/unit.test.js && node tests/v2.test.js && node tests/review.test.js && node tests/v21.test.js
+node tests/unit.test.js && node tests/v2.test.js && node tests/review.test.js && node tests/v21.test.js && node tests/v24.test.js
 ```
 
 The Muse protocol handling follows [urish/muse-js](https://github.com/urish/muse-js).
