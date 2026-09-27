@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#081028">
+  <meta name="color-scheme" content="dark">
+  <title>Muse Calm · live EEG, heart & calm</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Muse Calm">
+  <link rel="stylesheet" href="css/styles.css?v=2.3.0">
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <div class="aurora a1"></div><div class="aurora a2"></div><div class="aurora a3"></div>
+    <div class="stars"></div>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-orb"></span>
+      <div class="brand-text"><h1>Muse Calm</h1><p>Live brain · heart · calm</p></div>
+    </div>
+    <p class="top-note">Runs locally in your browser · no data leaves this device · not a medical device</p>
+    <div class="status-group">
+      <div id="statusPill" class="pill status idle"><span class="dot"></span><span id="statusText">Not connected</span></div>
+      <div id="batteryPill" class="pill battery" hidden>
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="2" y="7" width="17" height="10" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="20" y="10" width="2" height="4" rx="1" fill="currentColor"/><rect id="batteryFill" x="4" y="9" width="13" height="6" rx="1.2" fill="currentColor"/></svg>
+        <span id="batteryText">--%</span>
+      </div>
+    </div>
+    <div class="sound">
+      <button id="muteBtn" class="icon-btn" aria-label="Mute bird sounds" title="Mute / unmute">
+        <svg id="iconSound" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 8.8a4.5 4.5 0 0 1 0 6.4M18 6.3a8 8 0 0 1 0 11.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <svg id="iconMuted" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" hidden><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M16 9.5l5 5m0-5l-5 5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      </button>
+      <input id="volume" type="range" min="0" max="100" value="60" aria-label="Birds and bells volume" title="Birds &amp; bells volume">
+    </div>
+  </header>
+
+  <button type="button" id="alertStrip" class="alert-strip" hidden aria-live="polite"><span class="as-dot" aria-hidden="true"></span><span class="as-text" id="alertText"></span><span class="as-go">Session<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+
+  <main class="grid" id="grid">
+    <div class="col col-a">
+      <section class="card hero" data-pane="session" id="hero" data-phase="offline" aria-label="Calm meter">
+        <div class="hero-head">
+          <div>
+            <h2>Calm <button type="button" class="info" data-explain="calm" aria-label="How the calm score works">i</button></h2>
+            <p class="muted" id="heroSub">Relative alpha, adapted to you</p>
+          </div>
+          <div class="chips">
+            <span id="birdChip" class="chip birds" hidden>
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 14c3.5 0 5-2.5 7-2.5 1.3 0 2 .9 3.2.9 1.6 0 2.3-2.2 4.3-2.2 1.2 0 2.2.6 3.5 1.8-1.6.1-2.2.9-2.9 2-1.4 2.2-3.7 3.5-6.8 3.5-3.4 0-6.2-1.3-8.3-3.5z" fill="currentColor"/><circle cx="17.3" cy="11" r=".7" fill="#0b1a2e"/></svg>
+              <span id="birdText">Birds singing</span>
+            </span>
+            <span id="soundChip" class="chip warn" hidden>Tap anywhere to enable sound</span>
+            <button id="leaveBtn" class="btn tiny ghost" hidden>Disconnect</button>
+            <button type="button" id="moreBtn" class="btn tiny ghost more-btn" aria-expanded="false" aria-controls="heroFoot" title="Calm chart, bird threshold, recalibrate"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="7" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="10" cy="17" r="2.2" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span>More</span></button>
+          </div>
+        </div>
+
+        <div id="dropBanner" class="banner" hidden role="status">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 7.5v5.5M12 16.2v.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span id="dropText">Sensor lost contact</span>
+        </div>
+
+        <div class="orb-wrap">
+          <canvas id="orbCanvas" aria-hidden="true"></canvas>
+          <div class="orb-center">
+            <div class="orb-score"><span id="calmScore" class="empty">—</span><small id="calmUnit" hidden>s</small></div>
+            <div class="orb-label" id="calmLabel">Ready when you are</div>
+          </div>
+          <div class="bird-layer" id="birdLayer" aria-hidden="true"></div>
+        </div>
+
+        <div class="timer" id="timerBox" hidden>
+          <div class="timer-time" id="timerTime">00:00</div>
+          <div class="timer-sub" id="timerSub">remaining</div>
+          <div class="base" id="baseBox" hidden>
+            <div class="base-top"><span id="baseText">Recording your baseline… relax, eyes closed</span><b id="baseLeft">40 s left</b></div>
+            <div class="base-bar" role="progressbar" aria-label="Baseline progress" aria-valuemin="0" aria-valuemax="40" aria-valuenow="0" id="baseBarWrap"><i id="baseBar"></i></div>
+          </div>
+          <div class="actions">
+            <button id="pauseBtn" class="btn ghost"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path id="pauseIcon" d="M8 5.5v13M16 5.5v13" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/></svg><span>Pause</span></button>
+            <button id="endBtn" class="btn ghost"><span>End session</span></button>
+          </div>
+        </div>
+
+        <p class="hint" id="hint">Put on your Muse, then press <b>Connect Muse</b>. Or try the demo.</p>
+
+        <div class="actions" id="connectActions">
+          <button id="connectBtn" class="btn primary big">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M7 7l10 10-5 4.5V2.5L17 7 7 17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Connect Muse</span>
+          </button>
+          <button id="reconnectBtn" class="btn primary big" hidden><span>Reconnect</span></button>
+          <button id="demoBtn" class="btn ghost big"><span>Try demo</span></button>
+        </div>
+
+        <div class="setup" id="setupBox" hidden>
+          <div class="fitcheck">
+            <div class="fit-head">
+              <div><h3>Check fit</h3><p class="muted small" id="fitCheckSub">All four sensors need firm contact for 5 seconds</p></div>
+              <span class="fit-count" id="fitCount">0.0 / 5 s</span>
+            </div>
+            <div class="fit-grid" id="fitGrid">
+              <div class="fit-tile" data-q="off"><span class="dot"></span><div class="ft-name"><b>TP9</b><small>Left ear</small></div><p class="ft-hint">Waiting for signal</p></div>
+              <div class="fit-tile" data-q="off"><span class="dot"></span><div class="ft-name"><b>AF7</b><small>Left forehead</small></div><p class="ft-hint">Waiting for signal</p></div>
+              <div class="fit-tile" data-q="off"><span class="dot"></span><div class="ft-name"><b>AF8</b><small>Right forehead</small></div><p class="ft-hint">Waiting for signal</p></div>
+              <div class="fit-tile" data-q="off"><span class="dot"></span><div class="ft-name"><b>TP10</b><small>Right ear</small></div><p class="ft-hint">Waiting for signal</p></div>
+            </div>
+            <div class="fit-bar"><i id="fitBar"></i></div>
+          </div>
+          <div class="setup-row">
+            <div class="field">
+              <span class="field-label">Duration</span>
+              <div class="seg" id="durSeg">
+                <button data-min="5">5</button><button data-min="10">10</button><button data-min="15">15</button><button data-min="20">20</button><button data-min="30">30</button>
+                <label class="custom"><input id="durCustom" type="number" min="1" max="180" inputmode="numeric" placeholder="min" aria-label="Custom minutes"></label>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label" for="bellSel">Interval bell</label>
+              <select id="bellSel"><option value="0">Off</option><option value="1">Every 1 min</option><option value="2">Every 2 min</option><option value="5">Every 5 min</option><option value="10">Every 10 min</option></select>
+            </div>
+          </div>
+          <p class="base-note" id="baselineNote"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M3 12c2.5-4 5.5-6 9-6s6.5 2 9 6c-2.5 4-5.5 6-9 6s-6.5-2-9-6z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12.5c1.2 1.4 2.5 2 4 2s2.8-.6 4-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>The first 40 s of every session record your <button type="button" class="xlink" data-explain="baseline">baseline</button>: sit still, eyes closed. It counts toward the session length.</span></p>
+          <div class="actions">
+            <button id="startBtn" class="btn primary big" disabled><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg><span>Start session</span></button>
+            <button id="startAnyway" class="linkbtn">Start anyway</button>
+          </div>
+        </div>
+
+        <div class="hero-foot" id="heroFoot">
+          <div class="spark-box">
+            <div class="spark-head"><span>Calm over time</span><span class="muted" id="sparkRange">last 5 min</span></div>
+            <canvas id="calmSpark" aria-hidden="true"></canvas>
+          </div>
+          <div class="controls">
+            <label class="slider-label" for="threshold">Birds sing above <b id="thresholdVal">65</b></label>
+            <input id="threshold" type="range" min="45" max="90" value="65">
+            <div class="control-row">
+              <button id="recalBtn" class="btn tiny" disabled>Recalibrate</button>
+              <button id="previewBtn" class="btn tiny">Preview birds</button>
+              <button id="simDropBtn" class="btn tiny" hidden>Simulate contact loss</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="card fit" data-pane="body" aria-label="Headband fit">
+        <div class="card-head"><h2>Headband fit</h2><span id="fitSummary" class="muted small">No signal</span></div>
+        <div class="fit-gate" id="fitGate" hidden>
+          <div class="fg-top"><b>Fit check</b><span class="fit-count" id="fitCount2">0.0 / 5 s</span></div>
+          <div class="fit-bar"><i id="fitBar2"></i></div>
+          <p class="fg-sub" id="fitCheckSub2">All four sensors need firm contact for 5 seconds</p>
+        </div>
+        <div class="fit-body">
+          <svg class="head" viewBox="0 0 160 150" aria-hidden="true">
+            <defs><radialGradient id="headG" cx="50%" cy="40%" r="60%"><stop offset="0" stop-color="#1c3553"/><stop offset="1" stop-color="#0d1a2e"/></radialGradient></defs>
+            <path d="M80 16c33 0 52 26 52 58 0 34-22 60-52 60S28 108 28 74c0-32 19-58 52-58z" fill="url(#headG)" stroke="rgba(255,255,255,.14)"/>
+            <path d="M72 17l8-9 8 9" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2" stroke-linecap="round"/>
+            <path d="M26 66c-7 0-9 8-9 12s3 12 9 12M134 66c7 0 9 8 9 12s-3 12-9 12" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="2"/>
+            <path d="M31 84C34 46 56 30 80 30s46 16 49 54" fill="none" stroke="rgba(160,210,255,.25)" stroke-width="5" stroke-linecap="round"/>
+            <g class="sensor" id="s0"><circle cx="31" cy="86" r="9"/><text x="31" y="108">TP9</text></g>
+            <g class="sensor" id="s1"><circle cx="57" cy="38" r="9"/><text x="57" y="60">AF7</text></g>
+            <g class="sensor" id="s2"><circle cx="103" cy="38" r="9"/><text x="103" y="60">AF8</text></g>
+            <g class="sensor" id="s3"><circle cx="129" cy="86" r="9"/><text x="129" y="108">TP10</text></g>
+          </svg>
+          <ul class="sig-list" id="sigList">
+            <li data-q="off"><span class="nm" data-explain="TP9">TP9</span><span class="bar"><i></i></span><span class="val">--</span><span class="sh"></span></li>
+            <li data-q="off"><span class="nm" data-explain="AF7">AF7</span><span class="bar"><i></i></span><span class="val">--</span><span class="sh"></span></li>
+            <li data-q="off"><span class="nm" data-explain="AF8">AF8</span><span class="bar"><i></i></span><span class="val">--</span><span class="sh"></span></li>
+            <li data-q="off"><span class="nm" data-explain="TP10">TP10</span><span class="bar"><i></i></span><span class="val">--</span><span class="sh"></span></li>
+          </ul>
+        </div>
+      </section>
+      <section class="card past" data-pane="history" aria-label="Past sessions">
+          <div class="card-head"><div><h2>Past sessions</h2><span class="muted small" id="pastSub">Saved on this device</span></div><button id="clearHist" class="btn tiny" hidden>Clear</button></div>
+          <ul class="past-list" id="pastList"><li class="empty muted small">Your finished sessions will appear here.</li></ul>
+        </section>
+    </div>
+
+    <div class="col col-b">
+      <section class="card eeg" data-pane="brain" aria-label="Raw EEG">
+        <div class="card-head">
+          <div><h2>Raw EEG</h2><span class="muted small">4 channels · 256 Hz · 1–40 Hz view · last 5 s</span></div>
+          <span class="muted small" id="eegScale">±50 µV</span>
+        </div>
+        <div class="cv-wrap">
+          <canvas id="eegCanvas" class="tall" aria-hidden="true"></canvas>
+          <div class="ch-hit" id="chHit"><button type="button" data-explain="TP9">TP9</button><button type="button" data-explain="AF7">AF7</button><button type="button" data-explain="AF8">AF8</button><button type="button" data-explain="TP10">TP10</button></div>
+        </div>
+      </section>
+      <div class="pair pair-bands">
+        <section class="card bands" data-pane="brain" aria-label="Brainwave bands">
+          <div class="card-head">
+            <div><h2>Brainwaves</h2><span class="muted small">relative power · tap a band</span></div>
+          </div>
+          <div class="cv-wrap">
+            <canvas id="barsCanvas" class="bars" aria-hidden="true"></canvas>
+            <div class="band-hit" id="bandHit"><button type="button" data-explain="delta">Delta</button><button type="button" data-explain="theta">Theta</button><button type="button" data-explain="alpha">Alpha</button><button type="button" data-explain="beta">Beta</button><button type="button" data-explain="gamma">Gamma</button></div>
+          </div>
+        </section>
+        <section class="card history" data-pane="brain" aria-label="Brainwave history">
+          <div class="card-head">
+            <div><h2>Brainwave history</h2><span class="muted small">last 3 min</span></div>
+            <div class="legend" id="legend"></div>
+          </div>
+          <div class="cv-wrap cv-mid"><canvas id="histCanvas" class="mid" aria-hidden="true"></canvas></div>
+        </section>
+      </div>
+    </div>
+
+    <div class="col col-c">
+      <div class="pair pair-hm">
+        <section class="card heart" data-pane="body" aria-label="Heart rate">
+          <div class="card-head">
+            <h2>Heart</h2>
+            <span class="muted small">PPG · infrared</span>
+          </div>
+          <div class="bpm-row">
+            <svg id="heartIcon" class="heart-icon" viewBox="0 0 24 24" width="40" height="40" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-9.2-9.4C1.7 7.8 3.9 4.5 7.3 4.5c2 0 3.5 1.1 4.7 2.8 1.2-1.7 2.7-2.8 4.7-2.8 3.4 0 5.6 3.3 4.5 6.6-1.7 4.8-9.2 9.4-9.2 9.4z" fill="currentColor"/></svg>
+            <div class="bpm"><span id="bpm">--</span><small>bpm</small></div>
+            <div class="bpm-sub muted small" id="bpmSub">Waiting for pulse</div>
+          </div>
+          <div class="cv-wrap cv-ppg"><canvas id="ppgCanvas" class="ppg" aria-hidden="true"></canvas></div>
+        </section>
+
+      <section class="card motion" data-pane="body" aria-label="Head motion">
+        <div class="card-head"><h2>Head motion</h2><span class="muted small" id="motionState">--</span></div>
+        <div class="motion-top">
+          <canvas id="tiltCanvas" class="tilt" aria-hidden="true"></canvas>
+          <div class="tilt-stats">
+            <div><span class="k">Pitch</span><span class="v" id="pitchVal">--</span></div>
+            <div><span class="k">Roll</span><span class="v" id="rollVal">--</span></div>
+            <button id="recenterBtn" class="btn tiny">Re-center</button>
+          </div>
+        </div>
+        <div class="cv-wrap cv-imu"><canvas id="imuCanvas" class="imu" aria-hidden="true"></canvas></div>
+      </section>
+      </div>
+      <section class="card session" data-pane="history" aria-label="Session summary">
+            <div class="card-head"><h2>Session</h2><span class="muted small" id="sessionState">Not started</span></div>
+            <div class="stats">
+              <div class="stat"><span class="k">Duration</span><span class="v" id="stTime">00:00</span></div>
+              <div class="stat"><span class="k">Time calm</span><span class="v accent" id="stCalm">00:00</span></div>
+              <div class="stat"><span class="k"><span class="kl">Calm share</span><span class="ks">Calm %</span></span><span class="v" id="stPct">--</span></div>
+              <div class="stat"><span class="k"><span class="kl">Avg heart rate</span><span class="ks">Avg HR</span></span><span class="v" id="stHr">--</span></div>
+              <div class="stat"><span class="k"><span class="kl">Longest calm</span><span class="ks">Longest</span></span><span class="v" id="stLong">00:00</span></div>
+              <div class="stat"><span class="k"><span class="kl">Bird songs</span><span class="ks">Songs</span></span><span class="v" id="stBirds">0</span></div>
+            </div>
+          </section>
+      <section class="card scape" data-pane="session" aria-label="Soundscape">
+        <div class="card-head">
+          <div><h2>Soundscape</h2><span class="muted small" id="scapeState">Off</span></div>
+          <div class="scape-vol">
+            <button id="scapePlay" class="icon-btn" aria-label="Play or pause soundscape" title="Play / pause">
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path id="scapePlayIcon" d="M8 5.5v13l10.5-6.5z" fill="currentColor"/></svg>
+            </button>
+            <svg class="vol-ico" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+            <input id="scapeVol" type="range" min="0" max="100" value="50" aria-label="Soundscape volume" title="Soundscape volume">
+          </div>
+        </div>
+        <div class="tiles" id="scapeTiles">
+          <button data-id="none"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M7 17L17 7" stroke="currentColor" stroke-width="1.6"/></svg><span>None</span></button>
+          <button data-id="ocean"><svg viewBox="0 0 24 24"><path d="M2 14c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M2 18.5c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M4 10c1.5-3.5 4-5.5 7.5-5.5 2 0 3.5 1 4.5 2.5-2.2-.4-4 .5-4.8 2.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Ocean</span></button>
+          <button data-id="beach"><svg viewBox="0 0 24 24"><circle cx="17" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M2 17c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M3 21h18M5 9.5l2-1.2 2 1.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Beach</span></button>
+          <button data-id="rainforest"><svg viewBox="0 0 24 24"><path d="M12 21v-7M12 14c-4 0-6-2.5-6-5.5C6 5.5 9 3 12 3s6 2.5 6 5.5c0 3-2 5.5-6 5.5zM5 21v-3M5 18c-2 0-3-1.2-3-2.8S3.5 12 5 12s3 1.6 3 3.2S7 18 5 18zM19 21v-3m0 0c-1.6 0-3-1.3-3-3s1.4-3 3-3 3 1.3 3 3-1.4 3-3 3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg><span>Rainforest</span></button>
+          <button data-id="rain"><svg viewBox="0 0 24 24"><path d="M7 14.5a4.5 4.5 0 0 1-.6-9 5.5 5.5 0 0 1 10.6 1.5 3.8 3.8 0 0 1 .5 7.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 17.5l-1 2.5M12 17.5l-1 2.5M16 17.5l-1 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Rain</span></button>
+        </div>
+        <div class="subhead">
+          <span>Frequencies</span>
+          <span class="headphones"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M4 15v-3a8 8 0 0 1 16 0v3" fill="none" stroke="currentColor" stroke-width="1.7"/><rect x="3" y="14" width="4.5" height="6.5" rx="1.8" fill="currentColor"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="1.8" fill="currentColor"/></svg>Binaural beats need headphones</span>
+        </div>
+        <div class="tiles freq" id="freqTiles">
+          <button data-id="alpha"><b>α 10 Hz</b><span>Alpha · relaxed focus</span></button>
+          <button data-id="theta"><b>θ 6 Hz</b><span>Theta · deep meditation</span></button>
+          <button data-id="delta"><b>δ 2 Hz</b><span>Delta · sleep</span></button>
+          <button data-id="tone432"><b>432 Hz</b><span>Tone drone</span></button>
+          <button data-id="tone528"><b>528 Hz</b><span>Tone drone</span></button>
+        </div>
+        <label class="check small"><input type="checkbox" id="pinkChk"><span>Soft pink-noise bed under frequencies</span></label>
+      </section>
+    </div>
+  </main>
+
+  <nav class="tabbar" id="tabbar" role="tablist" aria-label="Sections">
+    <button type="button" role="tab" id="tab-session" data-tab="session" aria-selected="true" aria-controls="grid"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5" fill="currentColor" opacity=".9"/><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-dasharray="40 17" stroke-linecap="round"/></svg><span>Session</span><i class="tab-badge" id="tabBadge" hidden></i></button>
+    <button type="button" role="tab" id="tab-brain" data-tab="brain" aria-selected="false" aria-controls="grid" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12h3l2-5 3.5 10 3-8 2 5 1.5-2h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Brain</span></button>
+    <button type="button" role="tab" id="tab-body" data-tab="body" aria-selected="false" aria-controls="grid" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.2-4.4-8.8-9C2.2 7.8 4.3 4.8 7.4 4.8c1.9 0 3.4 1 4.6 2.7 1.2-1.7 2.7-2.7 4.6-2.7 3.1 0 5.2 3 4.2 6.2-1.6 4.6-8.8 9-8.8 9z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M5.5 12h3l1.5-2.5 2.2 4.5 1.6-2h4.7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Body</span></button>
+    <button type="button" role="tab" id="tab-history" data-tab="history" aria-selected="false" aria-controls="grid" tabindex="-1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4 4.5v3.2h3.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8v4.3l2.8 1.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>History</span></button>
+  </nav>
+
+  <div class="modal" id="summaryModal" hidden>
+    <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sumTitle">
+      <div class="sheet-head">
+        <div>
+          <p class="eyebrow" id="sumKind">Session complete</p>
+          <h2 id="sumTitle">Beautifully done</h2>
+          <p class="muted small" id="sumDate"></p>
+        </div>
+        <div class="sum-ring"><canvas id="sumRing" aria-hidden="true"></canvas><div class="sum-ring-val"><b id="sumShare">--</b><small>calm</small></div></div>
+      </div>
+      <p class="sum-msg" id="sumMsg"></p>
+      <div class="stats sum-stats">
+        <div class="stat"><span class="k">Duration</span><span class="v" id="sDur">--</span></div>
+        <div class="stat"><span class="k">Time calm</span><span class="v accent" id="sCalm">--</span></div>
+        <div class="stat"><span class="k">Longest streak</span><span class="v" id="sLong">--</span></div>
+        <div class="stat"><span class="k">Avg heart rate</span><span class="v" id="sHr">--</span></div>
+        <div class="stat"><span class="k">Lowest heart rate</span><span class="v" id="sMinHr">--</span></div>
+        <div class="stat"><span class="k">Bird songs earned</span><span class="v gold" id="sBirds">--</span></div>
+      </div>
+      <div class="sum-chart">
+        <div class="spark-head"><span>Calm over the session</span><span class="muted" id="sumThr">birds above 65</span></div>
+        <canvas id="sumChart" aria-hidden="true"></canvas>
+      </div>
+      <p class="muted small sum-note" id="sumNote"></p>
+      <div class="actions"><button id="sumDone" class="btn primary big"><span>Done</span></button></div>
+    </div>
+  </div>
+
+
+  <div class="modal" id="detailModal" hidden>
+    <div class="sheet detail" role="dialog" aria-modal="true" aria-labelledby="dtTitle">
+      <div class="sheet-head">
+        <div>
+          <p class="eyebrow" id="dtKind">Past session</p>
+          <h2 id="dtTitle">Session</h2>
+          <p class="muted small" id="dtSub"></p>
+        </div>
+        <div class="sum-ring"><canvas id="dtRing" aria-hidden="true"></canvas><div class="sum-ring-val"><b id="dtShare">--</b><small>calm</small></div></div>
+        <button type="button" class="icon-btn sheet-x" id="dtClose" aria-label="Close"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
+      <div class="stats sum-stats">
+        <div class="stat"><span class="k">Duration</span><span class="v" id="dDur">--</span></div>
+        <div class="stat"><span class="k">Time calm</span><span class="v accent" id="dCalm">--</span></div>
+        <div class="stat"><span class="k">Longest streak</span><span class="v" id="dLong">--</span></div>
+        <div class="stat"><span class="k">Avg heart rate</span><span class="v" id="dHr">--</span></div>
+        <div class="stat"><span class="k">Lowest heart rate</span><span class="v" id="dMinHr">--</span></div>
+        <div class="stat"><span class="k">Bird songs earned</span><span class="v gold" id="dBirds">--</span></div>
+      </div>
+      <div class="tl-box" id="dtTimeline">
+        <div class="spark-head"><span>Brainwaves, calm and heart rate</span><span class="muted" id="dtRes"></span></div>
+        <div class="legend tl-legend" id="dtLegend"></div>
+        <div class="tl-wrap" id="dtWrap">
+          <canvas id="dtCanvas" tabindex="0" role="img" aria-label="Session timeline. Use the left and right arrow keys to inspect moments."></canvas>
+          <div class="tl-tip" id="dtTip" hidden aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="tl-old" id="dtOld" hidden>
+        <p class="tl-note" id="dtOldNote"></p>
+        <div class="sum-chart" id="dtSeriesBox"><div class="spark-head"><span>Calm over the session</span><span class="muted" id="dtThr"></span></div><canvas id="dtSeries" aria-hidden="true"></canvas></div>
+      </div>
+      <p class="muted small sum-note" id="dtNote"></p>
+      <div class="actions detail-actions"><button type="button" id="dtDelete" class="btn ghost danger"><span>Delete session</span></button><button type="button" id="dtDone" class="btn primary big"><span>Close</span></button></div>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <p>Everything runs locally in your browser. No data leaves this device. Not a medical device.</p>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/muse-protocol.js?v=2.3.1"></script>
+  <script src="js/dsp.js?v=2.3.0"></script>
+  <script src="js/contact.js?v=2.3.0"></script>
+  <script src="js/session.js?v=2.3.0"></script>
+  <script src="js/muse-ble.js?v=2.3.0"></script>
+  <script src="js/simulator.js?v=2.3.0"></script>
+  <script src="js/birds.js?v=2.3.0"></script>
+  <script src="js/soundscapes.js?v=2.3.0"></script>
+  <script src="js/charts.js?v=2.3.0"></script>
+  <script src="js/explain.js?v=2.3.0"></script>
+  <script src="js/tabs.js?v=2.3.0"></script>
+  <script src="js/app.js?v=2.3.0"></script>
+</body>
+</html>
